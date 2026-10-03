@@ -21,6 +21,7 @@ model ProductVariant {
   shape               String?
   size                String
   allowCustomSize     Boolean  @default(false)
+  customSizeLimit     String?
   finish              String?
   price               Float
   compareAtPrice      Float?

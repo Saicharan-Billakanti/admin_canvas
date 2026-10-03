@@ -25,6 +25,7 @@ interface Variant {
   shape: string;
   size: string;
   allowCustomSize: boolean;
+  customSizeLimit: string;
   finish: string;
   price: string;
   compareAtPrice: string;
@@ -44,6 +45,7 @@ const emptyVariant = (): Variant => ({
   shape: "",
   size: "",
   allowCustomSize: false,
+  customSizeLimit: "",
   finish: "",
   price: "",
   compareAtPrice: "",
@@ -117,6 +119,7 @@ export default function HomePage() {
         shape: v.shape || null,
         size: v.size.trim(),
         allowCustomSize: v.allowCustomSize,
+        customSizeLimit: v.customSizeLimit?.trim() || null,
         finish: v.finish || null,
         price: v.price === "" ? undefined : parseFloat(v.price),
         compareAtPrice:
@@ -480,6 +483,22 @@ export default function HomePage() {
                         />
                         Enable "Custom Size" input for customers on this variant
                       </label>
+
+                      {/* Custom Size Upper Limit Input */}
+                      {variant.allowCustomSize && (
+                        <div style={{ marginTop: "0.75rem", padding: "0.75rem", background: "var(--color-bg)", borderRadius: "6px", border: "1px solid var(--color-border)" }}>
+                          <label className="ci-label" style={{ fontSize: "0.8rem", marginBottom: "0.25rem" }}>
+                            Custom Size Upper Limit (Optional)
+                          </label>
+                          <input
+                            type="text"
+                            className="ci-input"
+                            placeholder='e.g. Max 40" x 60"'
+                            value={variant.customSizeLimit}
+                            onChange={(e) => updateVariant(idx, "customSizeLimit", e.target.value)}
+                          />
+                        </div>
+                      )}
                     </div>
 
                     <div className="grid-3 mt-3">

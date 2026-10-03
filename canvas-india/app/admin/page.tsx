@@ -10,6 +10,7 @@ interface Row {
   shape: string | null;
   size: string;
   allowCustomSize: boolean;
+  customSizeLimit: string | null;
   finish: string | null;
   price: number;
   compareAtPrice: number | null;
@@ -258,7 +259,8 @@ export default function AdminPage() {
                   <th>Category</th>
                   <th>Shape</th>
                   <th>Size</th>
-                  <th>Allow Custom Size</th>
+                  <th>Custom Size?</th>
+                  <th>Size Limit</th>
                   <th>Finish</th>
                   <th>Price</th>
                   <th>Compare-at</th>
@@ -301,6 +303,7 @@ export default function AdminPage() {
                     <td>{row.shape ?? <span className="text-muted">—</span>}</td>
                     <td>{row.size}</td>
                     <td>{row.allowCustomSize ? <span className="text-success">Yes</span> : <span className="text-muted">No</span>}</td>
+                    <td>{row.customSizeLimit ?? <span className="text-muted">—</span>}</td>
                     <td title={row.finish ?? ""}>{row.finish ?? <span className="text-muted">—</span>}</td>
                     <td style={{ fontWeight: 600, color: "var(--color-success)" }}>
                       {formatINR(row.price)}
