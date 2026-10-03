@@ -250,9 +250,10 @@ export default function HomePage() {
               </label>
               <select
                 id="category"
-                className={`ci-select ${errors.category ? "error" : ""}`}
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                className={`ci-select ${errors.category && CATEGORIES.includes(category as any) ? "error" : ""}`}
+                value={CATEGORIES.includes(category as any) ? category : (category ? "Other" : "")}
+                onChange={(e) => setCategory(e.target.value === "Other" ? "Custom Category" : e.target.value)}
+                style={{ marginBottom: (!CATEGORIES.includes(category as any) && category) ? "0.5rem" : "0" }}
               >
                 <option value="">— Select a category —</option>
                 {CATEGORIES.map((c) => (
@@ -260,7 +261,19 @@ export default function HomePage() {
                     {c}
                   </option>
                 ))}
+                <option value="Other">Other (Custom)</option>
               </select>
+
+              {!CATEGORIES.includes(category as any) && category !== "" && (
+                <input
+                  type="text"
+                  className={`ci-input ${errors.category ? "error" : ""}`}
+                  placeholder="Enter custom category"
+                  value={category === "Custom Category" ? "" : category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  autoFocus
+                />
+              )}
               <FieldError errors={errors.category} />
             </div>
 
@@ -374,18 +387,34 @@ export default function HomePage() {
                     {showShape && (
                       <div className="mb-4">
                         <label className="ci-label">Shape</label>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "0.5rem" }}>
                           {SHAPES.map((s) => (
                             <button
                               key={s}
                               type="button"
-                              className={`ci-pill ${variant.shape === s ? "active" : ""}`}
+                              className={`ci-pill ${(variant.shape === s) || (s === "Custom" && variant.shape && !SHAPES.includes(variant.shape as any)) ? "active" : ""}`}
                               onClick={() => updateVariant(idx, "shape", s)}
                             >
                               {s}
                             </button>
                           ))}
                         </div>
+                        
+                        {/* Custom Shape Option */}
+                        {variant.shape && !SHAPES.filter(s => s !== "Custom").includes(variant.shape as any) && (
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                            <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--color-text)" }}>Custom Shape:</span>
+                            <input
+                              type="text"
+                              className={`ci-input ${vErr.shape ? "error" : ""}`}
+                              style={{ width: "200px" }}
+                              placeholder='e.g. Hexagon'
+                              value={variant.shape === "Custom" ? "" : variant.shape}
+                              onChange={(e) => updateVariant(idx, "shape", e.target.value)}
+                              autoFocus
+                            />
+                          </div>
+                        )}
                         <FieldError errors={vErr.shape} />
                       </div>
                     )}
@@ -427,54 +456,67 @@ export default function HomePage() {
                     <div className="grid-3">
                       {/* Material */}
                       <div>
-                        <label
-                          className="ci-label"
-                          htmlFor={`material-${idx}`}
-                        >
+                        <label className="ci-label" htmlFor={`material-${idx}`}>
                           Material
                         </label>
                         <select
                           id={`material-${idx}`}
                           className={`ci-select ${vErr.material ? "error" : ""}`}
-                          value={variant.material}
-                          onChange={(e) =>
-                            updateVariant(idx, "material", e.target.value)
-                          }
+                          value={MATERIALS.includes(variant.material as any) ? variant.material : (variant.material ? "Other" : "")}
+                          onChange={(e) => updateVariant(idx, "material", e.target.value === "Other" ? "Custom Material" : e.target.value)}
+                          style={{ marginBottom: (!MATERIALS.includes(variant.material as any) && variant.material) ? "0.5rem" : "0" }}
                         >
                           <option value="">— Select —</option>
                           {MATERIALS.map((m) => (
-                            <option key={m} value={m}>
-                              {m}
-                            </option>
+                            <option key={m} value={m}>{m}</option>
                           ))}
+                          <option value="Other">Other (Custom)</option>
                         </select>
+                        
+                        {!MATERIALS.includes(variant.material as any) && variant.material && (
+                          <input
+                            type="text"
+                            className="ci-input"
+                            placeholder="Custom Material"
+                            value={variant.material === "Custom Material" ? "" : variant.material}
+                            onChange={(e) => updateVariant(idx, "material", e.target.value)}
+                            autoFocus
+                          />
+                        )}
                         <FieldError errors={vErr.material} />
                       </div>
+                    </div> {/* Added missing closing div */}
 
                     <div className="grid-3 mt-3">
                       {/* Finish */}
                       <div>
-                        <label
-                          className="ci-label"
-                          htmlFor={`finish-${idx}`}
-                        >
+                        <label className="ci-label" htmlFor={`finish-${idx}`}>
                           Finish / Style
                         </label>
                         <select
                           id={`finish-${idx}`}
                           className={`ci-select ${vErr.finish ? "error" : ""}`}
-                          value={variant.finish}
-                          onChange={(e) =>
-                            updateVariant(idx, "finish", e.target.value)
-                          }
+                          value={FINISHES.includes(variant.finish as any) ? variant.finish : (variant.finish ? "Other" : "")}
+                          onChange={(e) => updateVariant(idx, "finish", e.target.value === "Other" ? "Custom Finish" : e.target.value)}
+                          style={{ marginBottom: (!FINISHES.includes(variant.finish as any) && variant.finish) ? "0.5rem" : "0" }}
                         >
                           <option value="">— Select —</option>
                           {FINISHES.map((f) => (
-                            <option key={f} value={f}>
-                              {f}
-                            </option>
+                            <option key={f} value={f}>{f}</option>
                           ))}
+                          <option value="Other">Other (Custom)</option>
                         </select>
+
+                        {!FINISHES.includes(variant.finish as any) && variant.finish && (
+                          <input
+                            type="text"
+                            className="ci-input"
+                            placeholder="Custom Finish"
+                            value={variant.finish === "Custom Finish" ? "" : variant.finish}
+                            onChange={(e) => updateVariant(idx, "finish", e.target.value)}
+                            autoFocus
+                          />
+                        )}
                         <FieldError errors={vErr.finish} />
                       </div>
 

@@ -74,14 +74,7 @@ export const variantSchema = z.object({
     .nonnegative("Stock must be ≥ 0"),
 });
 
-// z.enum in Zod v4 requires a plain array, not readonly tuple — use z.union of literals instead
-const categorySchema = z
-  .string()
-  .refine(
-    (v): v is (typeof CATEGORIES)[number] =>
-      (CATEGORIES as readonly string[]).includes(v),
-    { message: "Please select a valid category" }
-  );
+const categorySchema = z.string().min(1, "Category is required");
 
 export const submitSchema = z
   .object({
@@ -102,43 +95,6 @@ export const submitSchema = z
     variants: z
       .array(variantSchema)
       .min(1, "At least one size/variant is required"),
-  })
-  .superRefine((data, ctx) => {
-    data.variants.forEach((variant, i) => {
-      if (
-        SHAPE_CATEGORIES.includes(
-          data.category as (typeof SHAPE_CATEGORIES)[number]
-        ) &&
-        variant.shape &&
-        !(SHAPES as readonly string[]).includes(variant.shape)
-      ) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: `Variant ${i + 1}: Invalid shape value`,
-          path: ["variants", i, "shape"],
-        });
-      }
-      if (
-        variant.material &&
-        !(MATERIALS as readonly string[]).includes(variant.material)
-      ) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: `Variant ${i + 1}: Invalid material value`,
-          path: ["variants", i, "material"],
-        });
-      }
-      if (
-        variant.finish &&
-        !(FINISHES as readonly string[]).includes(variant.finish)
-      ) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: `Variant ${i + 1}: Invalid finish value`,
-          path: ["variants", i, "finish"],
-        });
-      }
-    });
   });
 
 export type SubmitInput = z.infer<typeof submitSchema>;
