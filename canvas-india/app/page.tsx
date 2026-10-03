@@ -10,6 +10,17 @@ import {
 
 const SHAPE_CATEGORIES = ["Canvas", "Acrylic"] as const;
 
+const PRESET_SIZES = [
+  '8" x 8"',
+  '11" x 14"',
+  '12" x 12"',
+  '16" x 16"',
+  '18" x 24"',
+  '16" x 20"',
+  '24" x 36"',
+  '30" x 40"',
+];
+
 interface Variant {
   shape: string;
   size: string;
@@ -359,55 +370,61 @@ export default function HomePage() {
                       )}
                     </div>
 
-                    <div className="grid-3">
-                      {/* Shape — only for Canvas/Acrylic */}
-                      {showShape && (
-                        <div>
-                          <label
-                            className="ci-label"
-                            htmlFor={`shape-${idx}`}
-                          >
-                            Shape
-                          </label>
-                          <select
-                            id={`shape-${idx}`}
-                            className={`ci-select ${vErr.shape ? "error" : ""}`}
-                            value={variant.shape}
-                            onChange={(e) =>
-                              updateVariant(idx, "shape", e.target.value)
-                            }
-                          >
-                            <option value="">— Any —</option>
-                            {SHAPES.map((s) => (
-                              <option key={s} value={s}>
-                                {s}
-                              </option>
-                            ))}
-                          </select>
-                          <FieldError errors={vErr.shape} />
+                    {/* Shape Section */}
+                    {showShape && (
+                      <div className="mb-4">
+                        <label className="ci-label">Shape</label>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                          {SHAPES.map((s) => (
+                            <button
+                              key={s}
+                              type="button"
+                              className={`ci-pill ${variant.shape === s ? "active" : ""}`}
+                              onClick={() => updateVariant(idx, "shape", s)}
+                            >
+                              {s}
+                            </button>
+                          ))}
                         </div>
-                      )}
-
-                      {/* Size */}
-                      <div>
-                        <label
-                          className="ci-label"
-                          htmlFor={`size-${idx}`}
-                        >
-                          Size <span className="required">*</span>
-                        </label>
-                        <input
-                          id={`size-${idx}`}
-                          className={`ci-input ${vErr.size ? "error" : ""}`}
-                          placeholder='e.g. 8" x 10"'
-                          value={variant.size}
-                          onChange={(e) =>
-                            updateVariant(idx, "size", e.target.value)
-                          }
-                        />
-                        <FieldError errors={vErr.size} />
+                        <FieldError errors={vErr.shape} />
                       </div>
+                    )}
 
+                    {/* Size Section */}
+                    <div className="mb-4">
+                      <label className="ci-label">Size <span className="required">*</span></label>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "0.75rem" }}>
+                        {PRESET_SIZES.map((s) => (
+                          <button
+                            key={s}
+                            type="button"
+                            className={`ci-pill ${variant.size === s ? "active" : ""}`}
+                            onClick={() => updateVariant(idx, "size", s)}
+                          >
+                            {s}
+                          </button>
+                        ))}
+                      </div>
+                      
+                      {/* Custom Size Option */}
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                        <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--color-text)" }}>Custom Size:</span>
+                        <input
+                          type="text"
+                          className={`ci-input ${vErr.size && !PRESET_SIZES.includes(variant.size) ? "error" : ""}`}
+                          style={{ width: "200px" }}
+                          placeholder='e.g. 10" x 15"'
+                          value={!PRESET_SIZES.includes(variant.size) ? variant.size : ""}
+                          onChange={(e) => updateVariant(idx, "size", e.target.value)}
+                          onFocus={() => {
+                            if (PRESET_SIZES.includes(variant.size)) updateVariant(idx, "size", "");
+                          }}
+                        />
+                      </div>
+                      <FieldError errors={vErr.size} />
+                    </div>
+
+                    <div className="grid-3">
                       {/* Material */}
                       <div>
                         <label
@@ -433,7 +450,6 @@ export default function HomePage() {
                         </select>
                         <FieldError errors={vErr.material} />
                       </div>
-                    </div>
 
                     <div className="grid-3 mt-3">
                       {/* Finish */}

@@ -18,16 +18,12 @@ export const SHAPES = [
   "Panoramic",
   "Circle",
   "Triangle",
+  "Custom",
 ] as const;
 
 export const MATERIALS = [
-  "380 GSM Cotton Canvas",
-  "5mm Cast Acrylic Glass",
-  "300 GSM Heavyweight Matte Art Paper",
-  "250 GSM Satin Photo Paper",
-  "Natural Cork",
-  "PVC Foam Board",
-  "Other",
+  "Acrylic",
+  "Canvas Pettu",
 ] as const;
 
 export const FINISHES = [
