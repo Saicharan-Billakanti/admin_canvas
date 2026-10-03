@@ -1,0 +1,34 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+// NOTE: In Prisma 7, the url is NOT inside this datasource block.
+// It is provided in prisma.config.ts for the CLI and via the
+// PrismaPg driver adapter at runtime. Leave this url-less.
+datasource db {
+  provider = "postgresql"
+}
+
+model ProductVariant {
+  id                  String   @id @default(cuid())
+  productCode         String
+  productName         String
+  category            String
+  shape               String?
+  size                String
+  material            String?
+  finish              String?
+  price               Float
+  compareAtPrice      Float?
+  startingStock       Int
+  description         String?
+  mainImageUrl        String
+  additionalImageUrls String?
+  createdAt           DateTime @default(now())
+
+  @@map("product_variants")
+}
