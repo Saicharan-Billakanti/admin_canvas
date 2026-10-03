@@ -24,7 +24,7 @@ const PRESET_SIZES = [
 interface Variant {
   shape: string;
   size: string;
-  material: string;
+  allowCustomSize: boolean;
   finish: string;
   price: string;
   compareAtPrice: string;
@@ -43,7 +43,7 @@ interface FieldErrors {
 const emptyVariant = (): Variant => ({
   shape: "",
   size: "",
-  material: "",
+  allowCustomSize: false,
   finish: "",
   price: "",
   compareAtPrice: "",
@@ -79,8 +79,18 @@ export default function HomePage() {
   const removeVariant = (idx: number) =>
     setVariants((v) => v.filter((_, i) => i !== idx));
 
+  const duplicateVariant = (idx: number) => {
+    setVariants((v) => {
+      const clone = { ...v[idx] };
+      clone.size = ""; // Reset size so they know to enter a new one
+      const next = [...v];
+      next.splice(idx + 1, 0, clone);
+      return next;
+    });
+  };
+
   const updateVariant = useCallback(
-    (idx: number, field: keyof Variant, value: string) => {
+    (idx: number, field: keyof Variant, value: any) => {
       setVariants((prev) => {
         const next = [...prev];
         next[idx] = { ...next[idx], [field]: value };
@@ -106,7 +116,7 @@ export default function HomePage() {
       variants: variants.map((v) => ({
         shape: v.shape || null,
         size: v.size.trim(),
-        material: v.material || null,
+        allowCustomSize: v.allowCustomSize,
         finish: v.finish || null,
         price: v.price === "" ? undefined : parseFloat(v.price),
         compareAtPrice:
@@ -369,16 +379,26 @@ export default function HomePage() {
                   <div key={idx} className="variant-block">
                     <div className="variant-block-header">
                       <span className="variant-num-badge">Variant {idx + 1}</span>
-                      {variants.length > 1 && (
+                      <div style={{ display: "flex", gap: "0.5rem" }}>
                         <button
                           type="button"
-                          className="ci-btn ci-btn-danger"
-                          onClick={() => removeVariant(idx)}
-                          aria-label={`Remove variant ${idx + 1}`}
+                          className="ci-btn ci-btn-secondary"
+                          onClick={() => duplicateVariant(idx)}
+                          style={{ padding: "0.25rem 0.6rem", fontSize: "0.75rem" }}
                         >
-                          ✕ Remove
+                          ⎘ Duplicate
                         </button>
-                      )}
+                        {variants.length > 1 && (
+                          <button
+                            type="button"
+                            className="ci-btn ci-btn-danger"
+                            onClick={() => removeVariant(idx)}
+                            aria-label={`Remove variant ${idx + 1}`}
+                          >
+                            ✕ Remove
+                          </button>
+                        )}
+                      </div>
                     </div>
 
                     {/* Shape Section */}
@@ -449,41 +469,18 @@ export default function HomePage() {
                         />
                       </div>
                       <FieldError errors={vErr.size} />
+                      
+                      {/* Allow Custom Size Toggle */}
+                      <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "1rem", fontSize: "0.85rem", cursor: "pointer", color: "var(--color-text)" }}>
+                        <input
+                          type="checkbox"
+                          checked={variant.allowCustomSize}
+                          onChange={(e) => updateVariant(idx, "allowCustomSize", e.target.checked)}
+                          style={{ width: "16px", height: "16px" }}
+                        />
+                        Enable "Custom Size" input for customers on this variant
+                      </label>
                     </div>
-
-                    <div className="grid-3">
-                      {/* Material */}
-                      <div>
-                        <label className="ci-label" htmlFor={`material-${idx}`}>
-                          Material
-                        </label>
-                        <select
-                          id={`material-${idx}`}
-                          className={`ci-select ${vErr.material ? "error" : ""}`}
-                          value={MATERIALS.includes(variant.material as any) ? variant.material : (variant.material ? "Other" : "")}
-                          onChange={(e) => updateVariant(idx, "material", e.target.value === "Other" ? "Custom Material" : e.target.value)}
-                          style={{ marginBottom: (!MATERIALS.includes(variant.material as any) && variant.material) ? "0.5rem" : "0" }}
-                        >
-                          <option value="">— Select —</option>
-                          {MATERIALS.map((m) => (
-                            <option key={m} value={m}>{m}</option>
-                          ))}
-                          <option value="Other">Other (Custom)</option>
-                        </select>
-                        
-                        {!MATERIALS.includes(variant.material as any) && variant.material && (
-                          <input
-                            type="text"
-                            className="ci-input"
-                            placeholder="Custom Material"
-                            value={variant.material === "Custom Material" ? "" : variant.material}
-                            onChange={(e) => updateVariant(idx, "material", e.target.value)}
-                            autoFocus
-                          />
-                        )}
-                        <FieldError errors={vErr.material} />
-                      </div>
-                    </div> {/* Added missing closing div */}
 
                     <div className="grid-3 mt-3">
                       {/* Finish */}

@@ -20,7 +20,7 @@ model ProductVariant {
   category            String
   shape               String?
   size                String
-  material            String?
+  allowCustomSize     Boolean  @default(false)
   finish              String?
   price               Float
   compareAtPrice      Float?

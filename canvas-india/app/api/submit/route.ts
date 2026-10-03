@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       additionalImageUrls: additionalImageUrls ?? null,
       shape: variant.shape ?? null,
       size: variant.size,
-      material: variant.material ?? null,
+      allowCustomSize: variant.allowCustomSize,
       finish: variant.finish ?? null,
       price: variant.price,
       compareAtPrice: variant.compareAtPrice ?? null,

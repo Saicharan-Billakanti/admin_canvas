@@ -9,7 +9,7 @@ interface Row {
   category: string;
   shape: string | null;
   size: string;
-  material: string | null;
+  allowCustomSize: boolean;
   finish: string | null;
   price: number;
   compareAtPrice: number | null;
@@ -258,7 +258,7 @@ export default function AdminPage() {
                   <th>Category</th>
                   <th>Shape</th>
                   <th>Size</th>
-                  <th>Material</th>
+                  <th>Allow Custom Size</th>
                   <th>Finish</th>
                   <th>Price</th>
                   <th>Compare-at</th>
@@ -300,7 +300,7 @@ export default function AdminPage() {
                     </td>
                     <td>{row.shape ?? <span className="text-muted">—</span>}</td>
                     <td>{row.size}</td>
-                    <td title={row.material ?? ""}>{row.material ?? <span className="text-muted">—</span>}</td>
+                    <td>{row.allowCustomSize ? <span className="text-success">Yes</span> : <span className="text-muted">No</span>}</td>
                     <td title={row.finish ?? ""}>{row.finish ?? <span className="text-muted">—</span>}</td>
                     <td style={{ fontWeight: 600, color: "var(--color-success)" }}>
                       {formatINR(row.price)}

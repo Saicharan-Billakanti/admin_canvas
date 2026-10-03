@@ -50,11 +50,7 @@ export const variantSchema = z.object({
     .nullable()
     .transform((v) => v || null),
   size: z.string().min(1, "Size is required"),
-  material: z
-    .string()
-    .optional()
-    .nullable()
-    .transform((v) => v || null),
+  allowCustomSize: z.boolean().default(false),
   finish: z
     .string()
     .optional()
