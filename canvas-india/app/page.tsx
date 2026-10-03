@@ -72,9 +72,7 @@ export default function HomePage() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const showShape = SHAPE_CATEGORIES.includes(
-    category as (typeof SHAPE_CATEGORIES)[number]
-  );
+  const showShape = true;
 
   const addVariant = () => setVariants((v) => [...v, emptyVariant()]);
 
