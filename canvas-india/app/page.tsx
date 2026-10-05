@@ -73,6 +73,35 @@ export default function HomePage() {
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [uploadingMain, setUploadingMain] = useState(false);
+  const [uploadingAdditional, setUploadingAdditional] = useState(false);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, isMain: boolean) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    
+    const setUploadState = isMain ? setUploadingMain : setUploadingAdditional;
+    const setUrlState = isMain ? setMainImageUrl : (url: string) => setAdditionalImageUrls(prev => prev ? `${prev}, ${url}` : url);
+
+    setUploadState(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Upload failed");
+      
+      setUrlState(data.url);
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setUploadState(false);
+    }
+  };
 
   const showShape = true;
 
@@ -319,14 +348,21 @@ export default function HomePage() {
               <label className="ci-label" htmlFor="mainImageUrl">
                 Main Image URL <span className="required">*</span>
               </label>
-              <input
-                id="mainImageUrl"
-                type="url"
-                className={`ci-input ${errors.mainImageUrl ? "error" : ""}`}
-                placeholder="https://res.cloudinary.com/..."
-                value={mainImageUrl}
-                onChange={(e) => setMainImageUrl(e.target.value)}
-              />
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <input
+                  id="mainImageUrl"
+                  type="url"
+                  style={{ flex: 1 }}
+                  className={`ci-input ${errors.mainImageUrl ? "error" : ""}`}
+                  placeholder="https://res.cloudinary.com/..."
+                  value={mainImageUrl}
+                  onChange={(e) => setMainImageUrl(e.target.value)}
+                />
+                <label className="ci-btn ci-btn-secondary" style={{ cursor: "pointer", whiteSpace: "nowrap" }}>
+                  {uploadingMain ? "⏳ Uploading..." : "📁 Upload File"}
+                  <input type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => handleFileUpload(e, true)} disabled={uploadingMain} />
+                </label>
+              </div>
               <FieldError errors={errors.mainImageUrl} />
             </div>
 
@@ -334,14 +370,21 @@ export default function HomePage() {
               <label className="ci-label" htmlFor="additionalImageUrls">
                 Additional Image URLs
               </label>
-              <input
-                id="additionalImageUrls"
-                type="text"
-                className="ci-input"
-                placeholder="Comma-separated URLs: https://..., https://..."
-                value={additionalImageUrls}
-                onChange={(e) => setAdditionalImageUrls(e.target.value)}
-              />
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <input
+                  id="additionalImageUrls"
+                  type="text"
+                  style={{ flex: 1 }}
+                  className="ci-input"
+                  placeholder="Comma-separated URLs: https://..., https://..."
+                  value={additionalImageUrls}
+                  onChange={(e) => setAdditionalImageUrls(e.target.value)}
+                />
+                <label className="ci-btn ci-btn-secondary" style={{ cursor: "pointer", whiteSpace: "nowrap" }}>
+                  {uploadingAdditional ? "⏳ Uploading..." : "📁 Upload File"}
+                  <input type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => handleFileUpload(e, false)} disabled={uploadingAdditional} />
+                </label>
+              </div>
               <div
                 style={{
                   fontSize: "0.75rem",
